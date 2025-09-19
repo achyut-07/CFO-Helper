@@ -34,31 +34,31 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ children }) => {
   }, [user]);
 
   const organizationTypes = [
-    { 
-      id: 'event', 
-      title: 'Event Organization', 
-      icon: Calendar, 
+    {
+      id: 'event',
+      title: 'Event Organization',
+      icon: Calendar,
       description: 'Planning conferences, weddings, or corporate events',
       color: 'from-purple-500 to-pink-500'
     },
-    { 
-      id: 'company', 
-      title: 'Established Company', 
-      icon: Building2, 
+    {
+      id: 'company',
+      title: 'Established Company',
+      icon: Building2,
       description: 'Running an existing business or corporation',
       color: 'from-emerald-500 to-teal-500'
     },
-    { 
-      id: 'startup', 
-      title: 'Startup', 
-      icon: Briefcase, 
+    {
+      id: 'startup',
+      title: 'Startup',
+      icon: Briefcase,
       description: 'Early-stage company or new venture',
       color: 'from-blue-500 to-indigo-500'
     },
-    { 
-      id: 'nonprofit', 
-      title: 'Non-Profit Organization', 
-      icon: Users, 
+    {
+      id: 'nonprofit',
+      title: 'Non-Profit Organization',
+      icon: Users,
       description: 'Charitable organization or NGO',
       color: 'from-orange-500 to-red-500'
     }
@@ -104,7 +104,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex items-center justify-center p-4">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         className="w-full max-w-4xl"
@@ -116,7 +116,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ children }) => {
             <span className="text-sm text-emerald-600 font-medium">Step {currentStep + 1} of 3</span>
           </div>
           <div className="w-full bg-emerald-100 rounded-full h-2">
-            <motion.div 
+            <motion.div
               className="bg-gradient-to-r from-emerald-500 to-teal-500 h-2 rounded-full"
               initial={{ width: 0 }}
               animate={{ width: `${((currentStep + 1) / 3) * 100}%` }}
@@ -141,11 +141,10 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ children }) => {
                   <motion.button
                     key={type.id}
                     onClick={() => updateData('organizationType', type.id)}
-                    className={`p-6 rounded-xl border-2 text-left transition-all duration-300 ${
-                      organizationData.organizationType === type.id
+                    className={`p-6 rounded-xl border-2 text-left transition-all duration-300 ${organizationData.organizationType === type.id
                         ? 'border-emerald-500 bg-emerald-50 shadow-lg'
                         : 'border-gray-200 bg-white hover:border-emerald-300 hover:shadow-md'
-                    }`}
+                      }`}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -284,7 +283,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ children }) => {
           >
             Back
           </button>
-          
+
           <button
             onClick={nextStep}
             disabled={

@@ -1,7 +1,7 @@
-import React from 'react';
-import { ClerkProvider, SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
+import { ClerkProvider, SignedIn, SignedOut } from '@clerk/clerk-react';
 import Dashboard from './components/Dashboard';
 import OnboardingFlow from './components/OnboardingFlow';
+import LandingPage from './components/LandingPage';
 import { Toaster } from 'react-hot-toast';
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -13,16 +13,16 @@ if (!clerkPubKey) {
 function App() {
   return (
     <ClerkProvider publishableKey={clerkPubKey}>
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+      <div className="min-h-screen">
         <SignedOut>
-          <RedirectToSignIn />
+          <LandingPage />
         </SignedOut>
         <SignedIn>
           <OnboardingFlow>
             <Dashboard />
           </OnboardingFlow>
         </SignedIn>
-        <Toaster 
+        <Toaster
           position="top-right"
           toastOptions={{
             duration: 3000,

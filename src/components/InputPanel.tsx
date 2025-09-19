@@ -72,7 +72,7 @@ const InputPanel: React.FC<InputPanelProps> = ({ inputs, onInputChange, onSimula
   ];
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.6, delay: 0.1 }}
@@ -83,10 +83,10 @@ const InputPanel: React.FC<InputPanelProps> = ({ inputs, onInputChange, onSimula
           <DollarSign className="w-5 h-5 mr-2 text-emerald-600" />
           Financial Parameters
         </h2>
-        
+
         <div className="space-y-8">
           {inputFields.map((field, index) => (
-            <motion.div 
+            <motion.div
               key={field.key}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -102,7 +102,7 @@ const InputPanel: React.FC<InputPanelProps> = ({ inputs, onInputChange, onSimula
                   {field.format(field.value)}
                 </span>
               </div>
-              
+
               <div className="relative">
                 <input
                   type="range"
@@ -138,7 +138,7 @@ const InputPanel: React.FC<InputPanelProps> = ({ inputs, onInputChange, onSimula
             </motion.div>
           ))}
         </div>
-        
+
         <motion.button
           onClick={onSimulate}
           whileHover={{ scale: 1.02 }}
@@ -151,7 +151,7 @@ const InputPanel: React.FC<InputPanelProps> = ({ inputs, onInputChange, onSimula
       </div>
 
       {/* Usage Stats */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}

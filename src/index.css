@@ -19,13 +19,18 @@
   * {
     box-sizing: border-box;
   }
-  
+
   body {
     @apply bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply text-emerald-900;
   }
 }
@@ -34,11 +39,11 @@
   .glass-card {
     @apply bg-white/80 backdrop-blur-sm border border-emerald-200/50 shadow-xl;
   }
-  
+
   .gradient-text {
     @apply bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent;
   }
-  
+
   .btn-primary {
     @apply bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105;
   }
@@ -68,13 +73,14 @@
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
 }
 
 .shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }

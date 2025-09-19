@@ -64,7 +64,7 @@ const CircularSlider: React.FC<{
           </div>
         </div>
       </div>
-      
+
       <div className="mt-4 text-center">
         <p className="text-sm font-medium text-emerald-800">{label}</p>
         <input
@@ -101,7 +101,7 @@ const VerticalSlider: React.FC<{
         <Icon className="w-5 h-5" style={{ color }} />
         <span className="text-sm font-medium text-emerald-800">{label}</span>
       </div>
-      
+
       <div className="relative flex-1 w-8 bg-emerald-100 rounded-full mx-4">
         <div
           className="absolute bottom-0 w-full rounded-full transition-all duration-300"
@@ -120,7 +120,7 @@ const VerticalSlider: React.FC<{
           orient="vertical"
         />
       </div>
-      
+
       <div className="mt-4 text-center">
         <div className="text-lg font-bold text-emerald-900">
           {formatter ? formatter(value) : value}
@@ -163,20 +163,20 @@ const ModernButton: React.FC<{
   );
 };
 
-const AdvancedInputPanel: React.FC<AdvancedInputPanelProps> = ({ 
-  inputs, 
-  onInputChange, 
-  onSimulate, 
-  usageStats 
+const AdvancedInputPanel: React.FC<AdvancedInputPanelProps> = ({
+  inputs,
+  onInputChange,
+  onSimulate,
+  usageStats
 }) => {
   const handleInputChange = (field: keyof SimulationInputs, value: number) => {
     onInputChange({ ...inputs, [field]: value });
   };
 
   const formatCurrency = (value: number) => `₹${value.toLocaleString('en-IN')}`;
-  
+
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.6, delay: 0.1 }}
@@ -192,13 +192,13 @@ const AdvancedInputPanel: React.FC<AdvancedInputPanelProps> = ({
           <ModernButton onClick={onSimulate} variant="primary" icon={Play} size="sm">
             Simulate
           </ModernButton>
-          <ModernButton onClick={() => {}} variant="secondary" icon={Target} size="sm">
+          <ModernButton onClick={() => { }} variant="secondary" icon={Target} size="sm">
             Goals
           </ModernButton>
-          <ModernButton onClick={() => {}} variant="success" icon={TrendingUp} size="sm">
+          <ModernButton onClick={() => { }} variant="success" icon={TrendingUp} size="sm">
             Forecast
           </ModernButton>
-          <ModernButton onClick={() => {}} variant="warning" icon={BarChart3} size="sm">
+          <ModernButton onClick={() => { }} variant="warning" icon={BarChart3} size="sm">
             Reports
           </ModernButton>
         </div>

@@ -78,7 +78,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, mockData, onExport
   ] : [];
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.6, delay: 0.2 }}
@@ -101,7 +101,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, mockData, onExport
         </div>
 
         {results ? (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -113,10 +113,9 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, mockData, onExport
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                className={`p-4 rounded-xl ${card.bgColor} border-l-4 ${
-                  card.color === 'text-emerald-600' ? 'border-emerald-500' : 
-                  card.color === 'text-red-600' ? 'border-red-500' : 'border-yellow-500'
-                }`}
+                className={`p-4 rounded-xl ${card.bgColor} border-l-4 ${card.color === 'text-emerald-600' ? 'border-emerald-500' :
+                    card.color === 'text-red-600' ? 'border-red-500' : 'border-yellow-500'
+                  }`}
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -148,7 +147,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, mockData, onExport
               <CartesianGrid strokeDasharray="3 3" stroke="#d1fae5" />
               <XAxis dataKey="month" stroke="#047857" fontSize={12} />
               <YAxis stroke="#047857" fontSize={12} />
-              <Tooltip 
+              <Tooltip
                 contentStyle={{
                   backgroundColor: '#fff',
                   border: '1px solid #e2e8f0',
@@ -157,19 +156,19 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, mockData, onExport
                 }}
                 formatter={(value: number) => [formatCurrency(value), '']}
               />
-              <Line 
-                type="monotone" 
-                dataKey="revenue" 
-                stroke="#059669" 
+              <Line
+                type="monotone"
+                dataKey="revenue"
+                stroke="#059669"
                 strokeWidth={4}
                 name="Revenue"
                 dot={{ fill: '#059669', strokeWidth: 2, r: 5 }}
                 activeDot={{ r: 7, stroke: '#059669', strokeWidth: 3 }}
               />
-              <Line 
-                type="monotone" 
-                dataKey="expenses" 
-                stroke="#dc2626" 
+              <Line
+                type="monotone"
+                dataKey="expenses"
+                stroke="#dc2626"
                 strokeWidth={4}
                 name="Expenses"
                 dot={{ fill: '#dc2626', strokeWidth: 2, r: 5 }}
@@ -189,7 +188,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, mockData, onExport
               <CartesianGrid strokeDasharray="3 3" stroke="#d1fae5" />
               <XAxis dataKey="month" stroke="#047857" fontSize={12} />
               <YAxis stroke="#047857" fontSize={12} />
-              <Tooltip 
+              <Tooltip
                 contentStyle={{
                   backgroundColor: '#fff',
                   border: '1px solid #e2e8f0',
@@ -198,7 +197,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, mockData, onExport
                 }}
                 formatter={(value: number) => [formatCurrency(value), '']}
               />
-                            <Bar dataKey="revenue" fill="#059669" name="Revenue" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="revenue" fill="#059669" name="Revenue" radius={[6, 6, 0, 0]} />
               <Bar dataKey="expenses" fill="#dc2626" name="Expenses" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>

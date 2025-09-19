@@ -9,7 +9,7 @@ import { useUser } from '@clerk/clerk-react';
 const Dashboard: React.FC = () => {
   const { user } = useUser();
   const organizationData = user?.unsafeMetadata?.organizationData as any;
-  
+
   const [inputs, setInputs] = useState<SimulationInputs>({
     employees: organizationData?.teamSize || 5,
     marketingSpend: 200000,
@@ -38,7 +38,7 @@ const Dashboard: React.FC = () => {
   // Live data simulation - update every 45 seconds for more realistic intervals
   useEffect(() => {
     const interval = setInterval(() => {
-      setMockData(prevData => 
+      setMockData(prevData =>
         prevData.map(item => ({
           ...item,
           revenue: Math.max(0, item.revenue + (Math.random() - 0.5) * 125000),
@@ -52,9 +52,9 @@ const Dashboard: React.FC = () => {
 
   const runSimulation = () => {
     // Enhanced simulation logic based on organization type
-    const baseMultiplier = organizationData?.organizationType === 'startup' ? 1.2 : 
-                          organizationData?.organizationType === 'event' ? 0.8 : 1.0;
-    
+    const baseMultiplier = organizationData?.organizationType === 'startup' ? 1.2 :
+      organizationData?.organizationType === 'event' ? 0.8 : 1.0;
+
     const assumedQuantity = Math.floor(100 * baseMultiplier);
     const baseSalary = organizationData?.organizationType === 'startup' ? 70000 : 60000;
     const baseFixedCost = organizationData?.organizationType === 'event' ? 200000 : 300000;
@@ -83,16 +83,16 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
       <Header />
-      
+
       <main className="container mx-auto px-4 py-8">
         {/* Top Row - Results Panel (Graphs at top) */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <ResultsPanel 
+          <ResultsPanel
             results={results}
             mockData={mockData}
             onExport={handleExport}
@@ -100,12 +100,12 @@ const Dashboard: React.FC = () => {
         </motion.div>
 
         {/* Bottom Row - Advanced Input Panel */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <AdvancedInputPanel 
+          <AdvancedInputPanel
             inputs={inputs}
             onInputChange={setInputs}
             onSimulate={runSimulation}
@@ -115,7 +115,7 @@ const Dashboard: React.FC = () => {
 
         {/* Organization Info Banner */}
         {organizationData && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}

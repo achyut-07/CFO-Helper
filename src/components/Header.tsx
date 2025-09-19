@@ -7,7 +7,7 @@ const Header: React.FC = () => {
   const organizationData = user?.unsafeMetadata?.organizationData as any;
 
   return (
-    <motion.header 
+    <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -17,9 +17,9 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="flex items-center justify-center w-14 h-14 bg-white rounded-2xl shadow-md border border-emerald-100">
-              <img 
-                src="/CFO Helper-logo.png" 
-                alt="CFO Helper Logo" 
+              <img
+                src="/CFO Helper-logo.png"
+                alt="CFO Helper Logo"
                 className="w-10 h-10 object-contain"
                 onError={(e) => {
                   // Fallback to icon if logo fails to load
@@ -33,14 +33,14 @@ const Header: React.FC = () => {
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">CFO Helper</h1>
               <p className="text-sm text-emerald-700 font-medium">
-                {organizationData?.companyName ? 
-                  `Financial Planning for ${organizationData.companyName}` : 
+                {organizationData?.companyName ?
+                  `Financial Planning for ${organizationData.companyName}` :
                   'Financial Planning & Business Forecasting for India'
                 }
               </p>
             </div>
           </div>
-          
+
           {/* User Profile Section */}
           <div className="flex items-center space-x-4">
             {organizationData && (
@@ -51,9 +51,9 @@ const Header: React.FC = () => {
                 </div>
               </div>
             )}
-            
+
             <div className="flex items-center space-x-2">
-              <UserButton 
+              <UserButton
                 appearance={{
                   elements: {
                     avatarBox: "w-10 h-10 rounded-xl border-2 border-emerald-200 shadow-md",
