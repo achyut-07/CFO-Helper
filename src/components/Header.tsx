@@ -17,17 +17,17 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="flex items-center justify-center w-14 h-14 bg-white rounded-2xl shadow-md border border-emerald-100">
-              <img
-                src="/CFO Helper-logo.png"
-                alt="CFO Helper Logo"
-                className="w-10 h-10 object-contain"
-                onError={(e) => {
-                  // Fallback to icon if logo fails to load
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  target.nextElementSibling?.classList.remove('hidden');
-                }}
-              />
+                          <img 
+              src="/CFO Helper-logo.svg?v=2" 
+              alt="CFO Helper Logo" 
+              className="w-10 h-10 object-contain"
+              onError={(e) => {
+                // Fallback to icon if logo fails to load
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                target.nextElementSibling?.classList.remove('hidden');
+              }}
+            />
               <Calculator className="w-7 h-7 text-emerald-600 hidden" />
             </div>
             <div>

@@ -81,7 +81,7 @@ const LandingPage: React.FC = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-xl">
                 <img 
-                  src="/CFO Helper-logo.png" 
+                  src="/CFO Helper-logo.svg?v=2" 
                   alt="CFO Helper Logo" 
                   className="w-12 h-12 object-contain"
                   onError={(e) => {

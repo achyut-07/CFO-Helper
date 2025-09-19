@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { MessageCircle } from 'lucide-react';
 import AdvancedInputPanel from './AdvancedInputPanel';
 import ResultsPanel from './ResultsPanel';
 import Header from './Header';
+import AIChatBot from './AIChatBot';
 import { FinancialData, SimulationInputs } from '../types/financial';
+import { FinancialContext } from '../services/aiAdvisor';
 import { useUser } from '@clerk/clerk-react';
 
 const Dashboard: React.FC = () => {
@@ -23,6 +26,8 @@ const Dashboard: React.FC = () => {
     simulations: 12,
     exports: 5
   });
+
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const [mockData, setMockData] = useState([
     { month: 'Jan', revenue: 1250000, expenses: 875000 },
@@ -78,6 +83,30 @@ const Dashboard: React.FC = () => {
 
   const handleExport = () => {
     setUsageStats(prev => ({ ...prev, exports: prev.exports + 1 }));
+  };
+
+  // Generate financial context for AI
+  const getFinancialContext = (): FinancialContext => {
+    const baseMultiplier = organizationData?.organizationType === 'startup' ? 1.2 :
+      organizationData?.organizationType === 'event' ? 0.8 : 1.0;
+    const assumedQuantity = Math.floor(100 * baseMultiplier);
+    const baseSalary = organizationData?.organizationType === 'startup' ? 70000 : 60000;
+    const baseFixedCost = organizationData?.organizationType === 'event' ? 200000 : 300000;
+
+    const revenue = inputs.productPrice * assumedQuantity * baseMultiplier;
+    const expenses = baseFixedCost + (baseSalary * inputs.employees) + inputs.marketingSpend + inputs.miscExpenses;
+    const netProfit = revenue - expenses;
+    const currentMonthData = mockData[mockData.length - 1];
+    
+    return {
+      currentRevenue: currentMonthData.revenue,
+      projectedRevenue: revenue,
+      expenses: expenses,
+      growthRate: 15, // Example growth rate
+      timeHorizon: 12,
+      cashFlow: currentMonthData.revenue - currentMonthData.expenses,
+      profitMargin: revenue > 0 ? (netProfit / revenue) * 100 : 0
+    };
   };
 
   return (
@@ -138,6 +167,26 @@ const Dashboard: React.FC = () => {
           </motion.div>
         )}
       </main>
+
+      {/* Floating AI Chat Button */}
+      {!isChatOpen && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1, type: "spring", stiffness: 200 }}
+          onClick={() => setIsChatOpen(true)}
+          className="fixed bottom-4 right-4 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:shadow-xl transition-all duration-200 transform hover:scale-110 z-40"
+        >
+          <MessageCircle className="w-6 h-6" />
+        </motion.button>
+      )}
+
+      {/* AI Chat Bot */}
+      <AIChatBot
+        financialContext={getFinancialContext()}
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+      />
     </div>
   );
 };
