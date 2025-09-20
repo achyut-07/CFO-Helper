@@ -1,17 +1,23 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MessageCircle } from 'lucide-react';
-import AdvancedInputPanel from './AdvancedInputPanel';
+import InputPanel from './InputPanel';
 import ResultsPanel from './ResultsPanel';
 import Header from './Header';
 import AIChatBot from './AIChatBot';
 import { FinancialData, SimulationInputs } from '../types/financial';
 import { FinancialContext } from '../services/aiAdvisor';
 import { useUser } from '@clerk/clerk-react';
+import { useSupabaseConnection, useUserData } from '../hooks/useSupabase';
+import { simulationService } from '../services/databaseService';
 
 const Dashboard: React.FC = () => {
   const { user } = useUser();
   const organizationData = user?.unsafeMetadata?.organizationData as any;
+  
+  // Supabase hooks - silent background verification
+  useSupabaseConnection(); // Just verify connection silently
+  const { userProfile, financialData, saveFinancialData } = useUserData();
 
   const [inputs, setInputs] = useState<SimulationInputs>({
     employees: organizationData?.teamSize || 5,
@@ -28,6 +34,20 @@ const Dashboard: React.FC = () => {
   });
 
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Load financial data from Supabase when available
+  useEffect(() => {
+    if (financialData) {
+      setInputs(prev => ({
+        ...prev,
+        currentFunds: financialData.current_funds || prev.currentFunds,
+        employees: financialData.employees || prev.employees,
+        marketingSpend: financialData.marketing_spend || prev.marketingSpend,
+        productPrice: financialData.product_price || prev.productPrice,
+        miscExpenses: financialData.misc_expenses || prev.miscExpenses
+      }));
+    }
+  }, [financialData]);
 
   const [mockData, setMockData] = useState([
     { month: 'Jan', revenue: 1250000, expenses: 875000 },
@@ -79,6 +99,42 @@ const Dashboard: React.FC = () => {
 
     setResults(newResults);
     setUsageStats(prev => ({ ...prev, simulations: prev.simulations + 1 }));
+    
+    // Scroll to top to show results prominently
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 300);
+    
+    // Save simulation to Supabase (silent background operation)
+    if (userProfile) {
+      simulationService.saveSimulation(userProfile.id, {
+        name: `Simulation ${new Date().toLocaleDateString()}`,
+        description: `${organizationData?.organizationType || 'General'} simulation`,
+        inputs: inputs,
+        results: newResults
+      }).then(() => {
+        console.log('💾 Simulation saved successfully');
+      }).catch(error => {
+        console.error('💾 Simulation save failed (continuing without save):', error.message);
+      });
+    }
+
+    // Save current financial data to Supabase (silent background operation)
+    if (saveFinancialData) {
+      saveFinancialData({
+        current_funds: inputs.currentFunds,
+        monthly_revenue: revenue / 12,
+        monthly_expenses: expenses / 12,
+        employees: inputs.employees,
+        marketing_spend: inputs.marketingSpend,
+        product_price: inputs.productPrice,
+        misc_expenses: inputs.miscExpenses
+      }).then(() => {
+        console.log('💾 Financial data saved successfully');
+      }).catch(error => {
+        console.error('💾 Financial data save failed (continuing without save):', error.message);
+      });
+    }
   };
 
   const handleExport = () => {
@@ -113,7 +169,11 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
       <Header />
 
+
+
       <main className="container mx-auto px-4 py-8">
+
+
         {/* Top Row - Results Panel (Graphs at top) */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -128,19 +188,50 @@ const Dashboard: React.FC = () => {
           />
         </motion.div>
 
-        {/* Bottom Row - Advanced Input Panel */}
+        {/* Bottom Row - Input Panel */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <AdvancedInputPanel
+          <InputPanel
             inputs={inputs}
             onInputChange={setInputs}
             onSimulate={runSimulation}
             usageStats={usageStats}
           />
         </motion.div>
+
+        {/* Prominent Call-to-Action when no results */}
+        {!results && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-30"
+          >
+            <motion.button
+              onClick={runSimulation}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              animate={{ 
+                boxShadow: [
+                  "0 4px 20px rgba(16, 185, 129, 0.3)",
+                  "0 8px 30px rgba(16, 185, 129, 0.6)", 
+                  "0 4px 20px rgba(16, 185, 129, 0.3)"
+                ]
+              }}
+              transition={{ 
+                duration: 2, 
+                repeat: Infinity,
+                repeatType: "reverse" 
+              }}
+              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl border-4 border-white"
+            >
+              🚀 Run Simulation Now!
+            </motion.button>
+          </motion.div>
+        )}
 
         {/* Organization Info Banner */}
         {organizationData && (

@@ -79,130 +79,261 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ results, mockData, onExport
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.6, delay: 0.2 }}
-      className="space-y-6"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="space-y-8"
     >
+      {results && (
+        <motion.div
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.8, type: "spring" }}
+          className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl p-8 shadow-2xl text-white"
+        >
+          <div className="text-center mb-6">
+            <motion.h1 
+              initial={{ y: -10 }}
+              animate={{ y: 0 }}
+              className="text-3xl font-bold mb-2"
+            >
+              🎯 Simulation Results
+            </motion.h1>
+            <p className="text-emerald-100">Your financial forecast is ready</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {metricCards.map((card, index) => (
+              <motion.div
+                key={card.title}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30 hover:bg-white/30 transition-all duration-300"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <card.icon className="w-6 h-6 text-white" />
+                  {card.trend === 'up' && <TrendingUp className="w-4 h-4 text-emerald-200" />}
+                  {card.trend === 'down' && <TrendingDown className="w-4 h-4 text-red-200" />}
+                </div>
+                <p className="text-sm text-white/80 mb-1">{card.title}</p>
+                <p className="text-xl font-bold text-white">{card.value}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
       {/* Results Summary */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-emerald-200 hover:shadow-2xl transition-all duration-300">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-emerald-900">Forecast Results</h2>
+      <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-emerald-200 hover:shadow-3xl transition-all duration-500">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl font-bold text-emerald-900 mb-2">Financial Analysis Dashboard</h2>
+            <p className="text-emerald-600">Comprehensive insights into your business performance</p>
+          </div>
           <motion.button
             onClick={handleExport}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: 1.05, rotate: 1 }}
+            whileTap={{ scale: 0.95 }}
             disabled={!results}
-            className="flex items-center space-x-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-4 py-2 rounded-xl font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-300"
+            className="flex items-center space-x-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all duration-300"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-5 h-5" />
             <span>Export Report</span>
           </motion.button>
         </div>
 
-        {results ? (
+        {!results && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            className="text-center py-16 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border-2 border-dashed border-emerald-300"
           >
-            {metricCards.map((card, index) => (
-              <motion.div
-                key={card.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                className={`p-4 rounded-xl ${card.bgColor} border-l-4 ${card.color === 'text-emerald-600' ? 'border-emerald-500' :
-                    card.color === 'text-red-600' ? 'border-red-500' : 'border-yellow-500'
-                  }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-slate-600">{card.title}</p>
-                    <p className={`text-xl font-bold ${card.color}`}>{card.value}</p>
-                  </div>
-                  <card.icon className={`w-8 h-8 ${card.color}`} />
-                </div>
-              </motion.div>
-            ))}
+            <motion.div
+              animate={{ 
+                rotate: [0, 5, -5, 0],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{ 
+                duration: 2,
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
+              className="text-emerald-400 mb-4"
+            >
+              <TrendingUp className="w-20 h-20 mx-auto" />
+            </motion.div>
+            <h3 className="text-2xl font-bold text-emerald-900 mb-3">Ready for Analysis</h3>
+            <p className="text-emerald-700 text-lg font-medium mb-2">Run a simulation to unlock powerful insights</p>
+            <p className="text-emerald-600 text-sm">Adjust your financial parameters below and click "Run Simulation"</p>
+            <motion.div
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+              className="mt-4 text-emerald-500 text-xs font-medium"
+            >
+              ↓ Scroll down to configure parameters ↓
+            </motion.div>
           </motion.div>
-        ) : (
-          <div className="text-center py-12">
-            <div className="text-emerald-300 mb-2">
-              <TrendingUp className="w-16 h-16 mx-auto" />
-            </div>
-            <p className="text-emerald-700 text-lg font-medium">Run a simulation to see your results</p>
-            <p className="text-emerald-500 text-sm mt-2">Adjust the parameters and click "Run Simulation"</p>
-          </div>
         )}
       </div>
 
       {/* Historical Data Chart */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-emerald-200 hover:shadow-2xl transition-all duration-300">
-        <h3 className="text-lg font-semibold text-emerald-900 mb-6">Historical Performance</h3>
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={mockData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#d1fae5" />
-              <XAxis dataKey="month" stroke="#047857" fontSize={12} />
-              <YAxis stroke="#047857" fontSize={12} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#fff',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                }}
-                formatter={(value: number) => [formatCurrency(value), '']}
-              />
-              <Line
-                type="monotone"
-                dataKey="revenue"
-                stroke="#059669"
-                strokeWidth={4}
-                name="Revenue"
-                dot={{ fill: '#059669', strokeWidth: 2, r: 5 }}
-                activeDot={{ r: 7, stroke: '#059669', strokeWidth: 3 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="expenses"
-                stroke="#dc2626"
-                strokeWidth={4}
-                name="Expenses"
-                dot={{ fill: '#dc2626', strokeWidth: 2, r: 5 }}
-                activeDot={{ r: 7, stroke: '#dc2626', strokeWidth: 3 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      {results && (
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-emerald-200 hover:shadow-3xl transition-all duration-500"
+        >
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-2xl font-bold text-emerald-900 mb-2">📈 Performance Trends</h3>
+              <p className="text-emerald-600">Track your revenue and expenses over time</p>
+            </div>
+            <div className="flex space-x-4 text-sm">
+              <div className="flex items-center">
+                <div className="w-4 h-4 bg-emerald-500 rounded mr-2"></div>
+                <span className="text-emerald-700 font-medium">Revenue</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-4 h-4 bg-red-500 rounded mr-2"></div>
+                <span className="text-red-700 font-medium">Expenses</span>
+              </div>
+            </div>
+          </div>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={mockData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#d1fae5" strokeOpacity={0.6} />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="#047857" 
+                  fontSize={12} 
+                  fontWeight="500"
+                  tick={{ fill: '#047857' }}
+                />
+                <YAxis 
+                  stroke="#047857" 
+                  fontSize={12} 
+                  fontWeight="500"
+                  tick={{ fill: '#047857' }}
+                  tickFormatter={(value) => `₹${(value / 100000).toFixed(1)}L`}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    border: '2px solid #10b981',
+                    borderRadius: '16px',
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                    backdropFilter: 'blur(10px)'
+                  }}
+                  formatter={(value: number) => [formatCurrency(value), '']}
+                  labelStyle={{ color: '#065f46', fontWeight: 'bold' }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#10b981"
+                  strokeWidth={5}
+                  name="Revenue"
+                  dot={{ fill: '#10b981', strokeWidth: 3, r: 6 }}
+                  activeDot={{ r: 10, stroke: '#10b981', strokeWidth: 4, fill: '#ffffff' }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="expenses"
+                  stroke="#ef4444"
+                  strokeWidth={5}
+                  name="Expenses"
+                  dot={{ fill: '#ef4444', strokeWidth: 3, r: 6 }}
+                  activeDot={{ r: 10, stroke: '#ef4444', strokeWidth: 4, fill: '#ffffff' }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
+      )}
 
       {/* Revenue vs Expenses Bar Chart */}
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 border border-emerald-200 hover:shadow-2xl transition-all duration-300">
-        <h3 className="text-lg font-semibold text-emerald-900 mb-6">Revenue vs Expenses</h3>
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={mockData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#d1fae5" />
-              <XAxis dataKey="month" stroke="#047857" fontSize={12} />
-              <YAxis stroke="#047857" fontSize={12} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#fff',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                }}
-                formatter={(value: number) => [formatCurrency(value), '']}
-              />
-              <Bar dataKey="revenue" fill="#059669" name="Revenue" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="expenses" fill="#dc2626" name="Expenses" radius={[6, 6, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      {results && (
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-emerald-200 hover:shadow-3xl transition-all duration-500"
+        >
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-2xl font-bold text-emerald-900 mb-2">📊 Comparative Analysis</h3>
+              <p className="text-emerald-600">Monthly breakdown of revenue vs expenses</p>
+            </div>
+            <motion.div 
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="bg-gradient-to-r from-emerald-100 to-teal-100 px-4 py-2 rounded-lg border border-emerald-300"
+            >
+              <span className="text-sm font-bold text-emerald-700">
+                Profit Margin: {results.profitMargin.toFixed(1)}%
+              </span>
+            </motion.div>
+          </div>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={mockData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#d1fae5" strokeOpacity={0.6} />
+                <XAxis 
+                  dataKey="month" 
+                  stroke="#047857" 
+                  fontSize={12} 
+                  fontWeight="500"
+                  tick={{ fill: '#047857' }}
+                />
+                <YAxis 
+                  stroke="#047857" 
+                  fontSize={12} 
+                  fontWeight="500"
+                  tick={{ fill: '#047857' }}
+                  tickFormatter={(value) => `₹${(value / 100000).toFixed(1)}L`}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                    border: '2px solid #10b981',
+                    borderRadius: '16px',
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+                    backdropFilter: 'blur(10px)'
+                  }}
+                  formatter={(value: number) => [formatCurrency(value), '']}
+                  labelStyle={{ color: '#065f46', fontWeight: 'bold' }}
+                />
+                <Bar 
+                  dataKey="revenue" 
+                  fill="url(#revenueGradient)" 
+                  name="Revenue" 
+                  radius={[8, 8, 0, 0]} 
+                />
+                <Bar 
+                  dataKey="expenses" 
+                  fill="url(#expensesGradient)" 
+                  name="Expenses" 
+                  radius={[8, 8, 0, 0]} 
+                />
+                <defs>
+                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.9}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.6}/>
+                  </linearGradient>
+                  <linearGradient id="expensesGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.9}/>
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0.6}/>
+                  </linearGradient>
+                </defs>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
+      )}
     </motion.div>
   );
 };

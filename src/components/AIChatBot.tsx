@@ -43,24 +43,21 @@ const AIChatBot: React.FC<AIChatBotProps> = ({
   }, [isOpen]);
 
   const handleInitialGreeting = async () => {
-    setIsLoading(true);
-    try {
-      const greeting = await aiAdvisor.sendMessage(
-        "Hello! I'd like some financial insights and recommendations based on my current business metrics.",
-        financialContext
-      );
-      setMessages([greeting]);
-    } catch (error) {
-      console.error('Error getting initial insights:', error);
-      setMessages([{
-        id: '1',
-        content: "Hello! I'm your AI financial advisor. I'm here to help you optimize your business finances, identify growth opportunities, and provide strategic recommendations. How can I assist you today?",
-        isUser: false,
-        timestamp: new Date()
-      }]);
-    } finally {
-      setIsLoading(false);
-    }
+    // Show a friendly welcome message without automatic financial analysis
+    const welcomeMessages = [
+      "👋 Welcome to your AI Financial Advisor! I'm here to help you make smart business decisions.",
+      "💡 I can help you with:\n• Financial analysis and insights\n• Revenue optimization strategies\n• Cost reduction recommendations\n• Growth planning and forecasting\n• Business performance evaluation",
+      "🚀 What would you like to explore today? Feel free to ask me anything about your finances!"
+    ];
+
+    const welcomeMessage: ChatMessage = {
+      id: '1',
+      content: welcomeMessages.join('\n\n'),
+      isUser: false,
+      timestamp: new Date()
+    };
+    
+    setMessages([welcomeMessage]);
   };
 
   const handleSendMessage = async () => {
@@ -219,6 +216,34 @@ const AIChatBot: React.FC<AIChatBotProps> = ({
             {messages.map((message) => (
               <MessageBubble key={message.id} message={message} />
             ))}
+            
+            {/* Quick Action Buttons (show only when there's just the welcome message) */}
+            {messages.length === 1 && !isLoading && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="space-y-2"
+              >
+                <p className="text-xs text-gray-500 px-2">💡 Quick actions:</p>
+                <div className="grid grid-cols-1 gap-2">
+                  {[
+                    "Analyze my current financial performance",
+                    "How can I improve my profit margins?",
+                    "What are my biggest expense risks?",
+                    "Help me forecast next quarter's growth"
+                  ].map((suggestion, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setInputMessage(suggestion)}
+                      className="text-left p-3 bg-white rounded-lg border border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 transition-all duration-200 text-sm text-gray-700 hover:text-emerald-700"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
             
             {isLoading && <TypingIndicator />}
             <div ref={messagesEndRef} />

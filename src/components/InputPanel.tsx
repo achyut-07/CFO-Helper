@@ -93,14 +93,27 @@ const InputPanel: React.FC<InputPanelProps> = ({ inputs, onInputChange, onSimula
               transition={{ duration: 0.4, delay: index * 0.1 }}
               className="space-y-3"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-2">
                 <label className="flex items-center text-sm font-medium text-emerald-800">
                   <field.icon className="w-4 h-4 mr-2 text-emerald-600" />
                   {field.label}
                 </label>
-                <span className="text-sm font-semibold text-emerald-600">
-                  {field.format(field.value)}
-                </span>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="number"
+                    min={field.min}
+                    max={field.max}
+                    step={field.step}
+                    value={field.value}
+                    onChange={(e) => {
+                      const value = Number(e.target.value);
+                      if (value >= field.min && value <= field.max) {
+                        handleInputChange(field.key, value);
+                      }
+                    }}
+                    className="w-32 px-3 py-1 text-sm border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-right font-medium"
+                  />
+                </div>
               </div>
 
               <div className="relative">
@@ -113,7 +126,11 @@ const InputPanel: React.FC<InputPanelProps> = ({ inputs, onInputChange, onSimula
                   onChange={(e) => handleInputChange(field.key, Number(e.target.value))}
                   className="w-full h-3 bg-gradient-to-r from-emerald-200 to-teal-200 rounded-lg appearance-none cursor-pointer slider"
                 />
-                <style jsx>{`
+                <div className="flex justify-between text-xs text-emerald-600 mt-1">
+                  <span>{field.format(field.min)}</span>
+                  <span>{field.format(field.max)}</span>
+                </div>
+                <style>{`
                   .slider::-webkit-slider-thumb {
                     appearance: none;
                     height: 22px;

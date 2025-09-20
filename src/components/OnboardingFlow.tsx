@@ -4,7 +4,7 @@ import { useUser } from '@clerk/clerk-react';
 import { Building2, Users, Calendar, Briefcase, ArrowRight, CheckCircle } from 'lucide-react';
 
 interface OrganizationData {
-  organizationType: 'event' | 'company' | 'startup' | 'nonprofit' | '';
+  organizationType: 'event' | 'enterprise' | 'startup' | 'freelance' | 'other' | '';
   companyName: string;
   teamSize: number;
   industry: string;
@@ -42,8 +42,8 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ children }) => {
       color: 'from-purple-500 to-pink-500'
     },
     {
-      id: 'company',
-      title: 'Established Company',
+      id: 'enterprise',
+      title: 'Enterprise/Company',
       icon: Building2,
       description: 'Running an existing business or corporation',
       color: 'from-emerald-500 to-teal-500'
@@ -56,11 +56,18 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ children }) => {
       color: 'from-blue-500 to-indigo-500'
     },
     {
-      id: 'nonprofit',
-      title: 'Non-Profit Organization',
+      id: 'freelance',
+      title: 'Freelance/Consulting',
       icon: Users,
-      description: 'Charitable organization or NGO',
+      description: 'Independent contractor or consulting business',
       color: 'from-orange-500 to-red-500'
+    },
+    {
+      id: 'other',
+      title: 'Other',
+      icon: Building2,
+      description: 'Non-profit, government, or other organization type',
+      color: 'from-gray-500 to-slate-500'
     }
   ];
 
@@ -71,15 +78,68 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ children }) => {
   ];
 
   const handleComplete = async () => {
-    // Save organization data to Clerk user metadata
+    // Save organization data to Clerk user metadata in the format expected by Supabase
     try {
       await user?.update({
         unsafeMetadata: {
           ...user.unsafeMetadata,
           onboardingCompleted: true,
+          company_name: organizationData.companyName,
+          industry: organizationData.industry,
+          organization_type: organizationData.organizationType,
+          team_size: organizationData.teamSize,
+          description: organizationData.description,
+          // Keep legacy data for compatibility
           organizationData: organizationData
         }
       });
+
+      // IMPORTANT: Also create the user in Supabase
+      // Since Clerk doesn't automatically sync to Supabase auth.users,
+      // we need to manually create the Supabase user record
+      try {
+        const { userService } = await import('../services/databaseService');
+        const result = await userService.getOrCreateProfile(
+          user!.id,
+          user!.primaryEmailAddress?.emailAddress || '',
+          {
+            full_name: user!.fullName || organizationData.companyName || 'User',
+            organizationData: {
+              companyName: organizationData.companyName,
+              industry: organizationData.industry,
+              organizationType: organizationData.organizationType,
+              teamSize: organizationData.teamSize
+            }
+          }
+        );
+        console.log('✅ User successfully created in Supabase:', result);
+      } catch (supabaseError) {
+        console.error('❌ Failed to create user in Supabase:', supabaseError);
+        // Let's also try a direct approach if the service fails
+        try {
+          const { supabase } = await import('../lib/supabase');
+          const { data, error } = await supabase
+            .from('users')
+            .insert({
+              id: user!.id,
+              email: user!.primaryEmailAddress?.emailAddress || '',
+              full_name: user!.fullName || organizationData.companyName || 'User',
+              company_name: organizationData.companyName,
+              industry: organizationData.industry,
+              organization_type: organizationData.organizationType,
+              team_size: organizationData.teamSize
+            })
+            .select()
+            .single();
+          
+          if (error) throw error;
+          console.log('✅ User created via direct Supabase call:', data);
+        } catch (directError) {
+          console.error('❌ Direct Supabase call also failed:', directError);
+          // Don't block onboarding completion even if both methods fail
+        }
+      }
+
       setIsOnboarding(false);
     } catch (error) {
       console.error('Error saving onboarding data:', error);
