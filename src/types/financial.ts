@@ -1,9 +1,20 @@
+export interface CustomParameter {
+  id: string;
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  category: 'income' | 'expense' | 'investment' | 'other';
+}
+
 export interface SimulationInputs {
   employees: number;
   marketingSpend: number;
   productPrice: number;
   miscExpenses: number;
   currentFunds: number;
+  customParameters: CustomParameter[];
 }
 
 export interface FinancialData {

@@ -1,8 +1,13 @@
 import { motion } from 'framer-motion';
-import { Calculator } from 'lucide-react';
+import { Calculator, MessageCircle } from 'lucide-react';
 import { UserButton, useUser } from '@clerk/clerk-react';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onChatOpen?: () => void;
+  isChatOpen?: boolean;
+}
+
+const Header: React.FC<HeaderProps> = ({ onChatOpen, isChatOpen }) => {
   const { user } = useUser();
   const organizationData = user?.unsafeMetadata?.organizationData as any;
 
@@ -51,6 +56,24 @@ const Header: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {/* AI Chat Button */}
+            <motion.button
+              onClick={onChatOpen}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`relative p-3 rounded-xl shadow-md border transition-all duration-200 ${
+                isChatOpen 
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-emerald-400' 
+                  : 'bg-white/80 hover:bg-white text-emerald-600 border-emerald-200 hover:border-emerald-300'
+              }`}
+              title="AI Financial Advisor"
+            >
+              <MessageCircle className="w-5 h-5" />
+              {!isChatOpen && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+              )}
+            </motion.button>
 
             <div className="flex items-center space-x-2">
               <UserButton

@@ -3,8 +3,16 @@ import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/ge
 // Validate API key exists
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 if (!API_KEY) {
+  console.error('❌ VITE_GEMINI_API_KEY is not configured');
   throw new Error('VITE_GEMINI_API_KEY is not configured. Please add your Gemini API key to the environment variables.');
 }
+
+// Validate API key format (should start with AIza)
+if (!API_KEY.startsWith('AIza')) {
+  console.warn('⚠️ API key format may be incorrect. Gemini API keys typically start with "AIza"');
+}
+
+console.log('✅ Gemini API key configured successfully (length:', API_KEY.length, 'chars)');
 
 // Initialize the Gemini AI client
 const genAI = new GoogleGenerativeAI(API_KEY);
@@ -27,33 +35,33 @@ export interface ChatMessage {
 }
 
 class AIFinancialAdvisor {
-  private model;
   private conversationHistory: ChatMessage[] = [];
   private requestCount: number = 0;
   private lastRequestTime: number = 0;
+  private currentModelName: string = '';
+  private availableModels: string[] = [];
   private readonly MAX_REQUESTS_PER_MINUTE = 10;
   private readonly MIN_REQUEST_INTERVAL = 2000; // 2 seconds between requests
 
   constructor() {
-    this.model = genAI.getGenerativeModel({ 
-      model: 'gemini-1.5-flash',
-      generationConfig: {
-        temperature: 0.7,
-        topK: 40,
-        topP: 0.95,
-        maxOutputTokens: 1024,
-      },
-      safetySettings: [
-        {
-          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-      ],
-    });
+    // Model will be created dynamically in sendMessage with fallback support
+    this.initializeModels();
+  }
+
+  private initializeModels() {
+    // Use the working models from our tests, prioritizing 2.0 and 2.5 flash models as requested
+    this.availableModels = [
+      'gemini-2.0-flash',                   // ✅ Working model
+      'gemini-2.5-flash',                   // ✅ Working model  
+      'gemini-2.5-flash-preview-05-20',    // ✅ Working model
+      'gemini-flash-latest',                // ✅ Working model
+      'gemini-pro-latest',                  // ✅ Working model
+      'gemini-2.5-flash-lite'               // ✅ Working model
+    ];
+    
+    this.currentModelName = this.availableModels[0];
+    console.log('🎯 Using working model:', this.currentModelName);
+    console.log('📋 Available fallback models:', this.availableModels);
   }
 
   private buildFinancialPrompt(context?: FinancialContext): string {
@@ -151,24 +159,111 @@ class AIFinancialAdvisor {
       
       Assistant:`;
 
-      // Generate AI response
-      const result = await this.model.generateContent(fullPrompt);
-      const response = await result.response;
-      const aiResponse = response.text();
-
-      // Add AI response to history
-      const aiChatMessage: ChatMessage = {
+      // Generate AI response with fallback models
+      // Use the available models list with current model prioritized
+      const modelNames = [
+        this.currentModelName,
+        ...this.availableModels
+      ].filter((model, index, arr) => arr.indexOf(model) === index); // Remove duplicates
+      
+      let lastError: Error | null = null;
+      
+      for (const modelName of modelNames) {
+        try {
+          console.log(`🧪 Trying model: ${modelName}`);
+          
+          const fallbackModel = genAI.getGenerativeModel({ 
+            model: modelName,
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.95,
+              maxOutputTokens: 1024,
+            },
+            safetySettings: [
+              {
+                category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+                threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+              },
+              {
+                category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+                threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+              },
+            ],
+          });
+          
+          const result = await fallbackModel.generateContent(fullPrompt);
+          const response = await result.response;
+          const aiResponse = response.text();
+          
+          console.log(`✅ Success with ${modelName}! Response length: ${aiResponse.length} chars`);
+          
+          // If successful, remember this model for future requests
+          if (this.currentModelName !== modelName) {
+            console.log(`🔄 Switched to model: ${modelName}`);
+            this.currentModelName = modelName;
+          }
+          
+          // Add AI response to history and return immediately
+          const aiChatMessage: ChatMessage = {
+            id: (Date.now() + 1).toString(),
+            content: aiResponse,
+            isUser: false,
+            timestamp: new Date()
+          };
+          this.conversationHistory.push(aiChatMessage);
+          return aiChatMessage;
+          
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : String(error);
+          
+          // Check if it's a temporary service issue (503)
+          if (errorMessage.includes('503') || errorMessage.includes('service is currently unavailable')) {
+            console.warn(`⏳ Model ${modelName} temporarily unavailable`);
+          } else {
+            console.warn(`❌ Model ${modelName} failed: ${errorMessage}`);
+          }
+          
+          lastError = error as Error;
+          continue;
+        }
+      }
+      
+      // Only reach here if ALL models failed
+      console.error('🚨 All models failed. Last error:', lastError?.message);
+      
+      // Check if it was a temporary service issue
+      const isTemporaryIssue = lastError && lastError.message.includes('503');
+      
+      // Return a helpful fallback response
+      const fallbackMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        content: aiResponse,
+        content: isTemporaryIssue 
+          ? "⏳ The AI service is temporarily busy. This usually resolves quickly! In the meantime, here are some key financial insights:\n\n💡 **Quick Financial Tips:**\n• Track your monthly cash flow closely\n• Maintain 3-6 months of operating expenses as emergency fund\n• Review your biggest expense categories monthly\n• Monitor profit margins and adjust pricing if needed\n• Plan for seasonal variations in revenue\n\n🔄 Please try your question again in a few moments!"
+          : "I'm currently experiencing technical difficulties connecting to the AI service. However, I can still help you with general financial advice:\n\n💡 **Quick Tips:**\n• Monitor your cash flow regularly\n• Keep 3-6 months of expenses as emergency fund\n• Review and optimize your biggest expense categories\n• Track your profit margins monthly\n\nPlease try asking your question again in a moment, or contact support if the issue persists.",
         isUser: false,
         timestamp: new Date()
       };
-      this.conversationHistory.push(aiChatMessage);
-
-      return aiChatMessage;
+      this.conversationHistory.push(fallbackMessage);
+      return fallbackMessage;
     } catch (error) {
       console.error('Error generating AI response:', error);
       throw new Error('Failed to generate AI response. Please try again.');
+    }
+  }
+
+  async testConnection(): Promise<boolean> {
+    try {
+      console.log('🧪 Testing connection with model:', this.currentModelName);
+      const testModel = genAI.getGenerativeModel({ model: this.currentModelName });
+      const result = await testModel.generateContent('Hello, respond with just "OK"');
+      const response = await result.response;
+      const text = response.text();
+      console.log('✅ Model test successful:', text);
+      return true;
+    } catch (error) {
+      console.error('❌ Model test failed:', error);
+      return false;
     }
   }
 

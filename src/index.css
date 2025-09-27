@@ -23,6 +23,11 @@
   body {
     @apply bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 font-sans;
     font-feature-settings: "rlig" 1, "calt" 1;
+    /* Prevent layout shifts and improve performance */
+    overflow-x: hidden;
+    transform: translateZ(0);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1,
@@ -46,6 +51,27 @@
 
   .btn-primary {
     @apply bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105;
+  }
+
+  /* Smooth animations and prevent layout shifts */
+  .smooth-animation {
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /* Chat container optimization */
+  .chat-container {
+    contain: layout style paint;
+    transform: translateZ(0);
+  }
+
+  /* Prevent text selection flickering */
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
 }
 

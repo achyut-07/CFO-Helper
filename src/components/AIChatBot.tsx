@@ -43,7 +43,7 @@ const AIChatBot: React.FC<AIChatBotProps> = ({
   }, [isOpen]);
 
   const handleInitialGreeting = async () => {
-    // Show a friendly welcome message without automatic financial analysis
+    // Show a friendly welcome message and test AI connection
     const welcomeMessages = [
       "👋 Welcome to your AI Financial Advisor! I'm here to help you make smart business decisions.",
       "💡 I can help you with:\n• Financial analysis and insights\n• Revenue optimization strategies\n• Cost reduction recommendations\n• Growth planning and forecasting\n• Business performance evaluation",
@@ -58,6 +58,22 @@ const AIChatBot: React.FC<AIChatBotProps> = ({
     };
     
     setMessages([welcomeMessage]);
+
+    // Test AI connection in background
+    try {
+      const connectionTest = await aiAdvisor.testConnection();
+      if (!connectionTest) {
+        const errorMessage: ChatMessage = {
+          id: '2',
+          content: "⚠️ I'm currently having trouble connecting to the AI service. I can still provide general financial guidance, but some advanced features may be limited. Please try again in a moment.",
+          isUser: false,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, errorMessage]);
+      }
+    } catch (error) {
+      console.warn('AI connection test failed:', error);
+    }
   };
 
   const handleSendMessage = async () => {
@@ -110,10 +126,10 @@ const AIChatBot: React.FC<AIChatBotProps> = ({
 
   const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => (
     <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      className={`flex items-start gap-3 ${
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className={`flex items-start gap-3 smooth-animation ${
         message.isUser ? 'justify-end' : 'justify-start'
       }`}
     >
@@ -150,8 +166,9 @@ const AIChatBot: React.FC<AIChatBotProps> = ({
 
   const TypingIndicator: React.FC = () => (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
       className="flex items-start gap-3"
     >
       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
@@ -162,18 +179,18 @@ const AIChatBot: React.FC<AIChatBotProps> = ({
           <div className="flex space-x-1">
             <motion.div
               className="w-2 h-2 bg-gray-400 rounded-full"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 1, repeat: Infinity, delay: 0 }}
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 0.8, repeat: Infinity, delay: 0 }}
             />
             <motion.div
               className="w-2 h-2 bg-gray-400 rounded-full"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 0.8, repeat: Infinity, delay: 0.15 }}
             />
             <motion.div
               className="w-2 h-2 bg-gray-400 rounded-full"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 0.8, repeat: Infinity, delay: 0.3 }}
             />
           </div>
           <span className="text-sm text-gray-500">AI is thinking...</span>
@@ -186,11 +203,11 @@ const AIChatBot: React.FC<AIChatBotProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
-          className="fixed bottom-4 right-4 w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col z-50 overflow-hidden"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
+          className="fixed top-20 right-4 w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col z-50 overflow-hidden chat-container smooth-animation"
         >
           {/* Header */}
           <div className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-4 flex items-center justify-between">
@@ -220,9 +237,9 @@ const AIChatBot: React.FC<AIChatBotProps> = ({
             {/* Quick Action Buttons (show only when there's just the welcome message) */}
             {messages.length === 1 && !isLoading && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.3 }}
                 className="space-y-2"
               >
                 <p className="text-xs text-gray-500 px-2">💡 Quick actions:</p>

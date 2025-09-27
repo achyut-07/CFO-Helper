@@ -22,16 +22,16 @@ SELECT 'Auth users count:' as info, COUNT(*) as count FROM auth.users;
 Run this in Supabase SQL Editor to update the user registration function:
 
 ```sql
-CREATE OR REPLACE FUNCTION public.handle_new_user() 
-RETURNS TRIGGER 
-LANGUAGE plpgsql 
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+LANGUAGE plpgsql
 SECURITY DEFINER SET search_path = public
 AS $$
 BEGIN
   -- Insert new user with enhanced metadata from Clerk
   INSERT INTO public.users (
-    id, 
-    email, 
+    id,
+    email,
     full_name,
     company_name,
     industry,
@@ -39,10 +39,10 @@ BEGIN
     team_size
   )
   VALUES (
-    NEW.id, 
-    NEW.email, 
+    NEW.id,
+    NEW.email,
     COALESCE(
-      NEW.raw_user_meta_data->>'full_name', 
+      NEW.raw_user_meta_data->>'full_name',
       NEW.raw_user_meta_data->>'name',
       SPLIT_PART(NEW.email, '@', 1)
     ),
@@ -51,7 +51,7 @@ BEGIN
     COALESCE(NEW.raw_user_meta_data->>'organization_type', 'other'),
     COALESCE((NEW.raw_user_meta_data->>'team_size')::integer, 1)
   );
-  
+
   -- Create initial financial data record for new user
   INSERT INTO public.financial_data (
     user_id,
@@ -67,7 +67,7 @@ BEGIN
     0,
     COALESCE((NEW.raw_user_meta_data->>'team_size')::integer, 1)
   );
-  
+
   RETURN NEW;
 END;
 $$;
@@ -91,7 +91,7 @@ After completing onboarding, check in Supabase SQL Editor:
 
 ```sql
 -- Check if user was created properly
-SELECT 
+SELECT
   u.email,
   u.full_name,
   u.company_name,
@@ -102,7 +102,7 @@ SELECT
 FROM public.users u;
 
 -- Check if financial data was created
-SELECT 
+SELECT
   fd.user_id,
   fd.current_funds,
   fd.employees,

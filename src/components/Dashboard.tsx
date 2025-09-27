@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MessageCircle } from 'lucide-react';
 import InputPanel from './InputPanel';
 import ResultsPanel from './ResultsPanel';
 import Header from './Header';
@@ -24,7 +23,8 @@ const Dashboard: React.FC = () => {
     marketingSpend: 200000,
     productPrice: 2999,
     miscExpenses: 150000,
-    currentFunds: 5000000
+    currentFunds: 5000000,
+    customParameters: []
   });
 
   const [results, setResults] = useState<FinancialData | null>(null);
@@ -44,7 +44,8 @@ const Dashboard: React.FC = () => {
         employees: financialData.employees || prev.employees,
         marketingSpend: financialData.marketing_spend || prev.marketingSpend,
         productPrice: financialData.product_price || prev.productPrice,
-        miscExpenses: financialData.misc_expenses || prev.miscExpenses
+        miscExpenses: financialData.misc_expenses || prev.miscExpenses,
+        customParameters: prev.customParameters // Keep existing custom parameters
       }));
     }
   }, [financialData]);
@@ -167,9 +168,10 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
-      <Header />
-
-
+        <Header 
+          onChatOpen={() => setIsChatOpen(true)}
+          isChatOpen={isChatOpen}
+        />
 
       <main className="container mx-auto px-4 py-8">
 
@@ -205,28 +207,16 @@ const Dashboard: React.FC = () => {
         {/* Prominent Call-to-Action when no results */}
         {!results && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, delay: 0.6 }}
             className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-30"
           >
             <motion.button
               onClick={runSimulation}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              animate={{ 
-                boxShadow: [
-                  "0 4px 20px rgba(16, 185, 129, 0.3)",
-                  "0 8px 30px rgba(16, 185, 129, 0.6)", 
-                  "0 4px 20px rgba(16, 185, 129, 0.3)"
-                ]
-              }}
-              transition={{ 
-                duration: 2, 
-                repeat: Infinity,
-                repeatType: "reverse" 
-              }}
-              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl border-4 border-white"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl border-4 border-white transition-all duration-200"
             >
               🚀 Run Simulation Now!
             </motion.button>
@@ -236,9 +226,9 @@ const Dashboard: React.FC = () => {
         {/* Organization Info Banner */}
         {organizationData && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.5 }}
             className="mt-8 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 backdrop-blur-sm rounded-2xl p-6 border border-emerald-300/30"
           >
             <div className="flex items-center justify-between">
@@ -259,18 +249,7 @@ const Dashboard: React.FC = () => {
         )}
       </main>
 
-      {/* Floating AI Chat Button */}
-      {!isChatOpen && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1, type: "spring", stiffness: 200 }}
-          onClick={() => setIsChatOpen(true)}
-          className="fixed bottom-4 right-4 w-14 h-14 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:shadow-xl transition-all duration-200 transform hover:scale-110 z-40"
-        >
-          <MessageCircle className="w-6 h-6" />
-        </motion.button>
-      )}
+
 
       {/* AI Chat Bot */}
       <AIChatBot
